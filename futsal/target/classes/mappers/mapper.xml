@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.futsal.Mapper">
+
+<select id="boardList" resultType="model.BoardTO">
+	select seq, hit, name, subject, date_format(wdate, '%Y-%m-%d') wdate, datediff(now(), wdate) wgap
+	from board
+	order by seq desc
+	limit #{pageStart}, 10
+</select>
+
+<select id="boardTotal" resultType="Integer">
+	select count(*)
+	from board
+</select>
+
+<update id="boardSeq">
+	alter table board auto_increment = 1
+</update>
+
+<insert id="boardWriteOk" parameterType="model.BoardTO">
+	insert into board
+	values (0, 0, #{name}, #{subject}, #{password}, #{content}, #{email}, now())
+</insert>
+
+<select id="boardView" parameterType="String" resultType="model.BoardTO">
+	select seq, hit, name, subject, content, email, date_format(wdate, '%Y-%m-%d') wdate
+	from board
+	where seq = #{seq}
+</select>
+
+<update id="boardViewHit" parameterType="String">
+	update board set hit=hit+1
+	where seq= #{seq}
+</update>
+
+<select id="boardModify" parameterType="String" resultType="model.BoardTO">
+	select seq, name, subject, content, email
+	from board
+	where seq = #{seq}
+</select>
+
+<update id="boardModifyOk" parameterType="model.BoardTO">
+	update board set
+	name = #{name}, subject = #{subject}, content = #{content}, email = #{email}, wdate= now()
+	where seq = #{seq} and password = #{password}
+</update>
+
+<select id="boardDelete" parameterType="String" resultType="model.BoardTO">
+	select seq, name, subject, content, email
+	from board
+	where seq = #{seq}
+</select>
+
+<delete id="boardDeleteOk" parameterType="model.BoardTO">
+	delete from board
+	where seq = #{seq} and password = #{password}
+</delete>
+
+</mapper>
